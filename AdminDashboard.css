@@ -1,0 +1,77 @@
+.admin-dashboard {
+  padding: 20px;
+  max-width: 1000px;
+  margin: auto;
+  background: #f9f9f9;
+  min-height: 100vh;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.stats, .add-pet-form, .pet-list {
+  background: #ffffff;
+  padding: 20px;
+  margin-bottom: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+
+.add-pet-form form input,
+.add-pet-form form textarea {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  font-size: 14px;
+}
+
+.add-pet-form form button {
+  background-color: #28a745;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.add-pet-form form button:hover {
+  background-color: #218838;
+}
+
+.pet-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.pet-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #fdfdfd;
+  transition: transform 0.2s ease;
+}
+
+.pet-item:hover {
+  transform: scale(1.01);
+}
+
+.pet-item button {
+  background-color: #dc3545;
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.pet-item button:hover {
+  background-color: #c82333;
+}
