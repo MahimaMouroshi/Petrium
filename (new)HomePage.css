@@ -1,0 +1,320 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+:root {
+  --color-bg: #fff0f5;
+  --color-primary-gradient: linear-gradient(135deg, #ffa8e2, #b5f0ff, #d7baff);
+  --color-button: linear-gradient(135deg, #fca5f1 0%, #b5f0ff 100%);
+  --color-hover-glow: 0 0 10px rgba(255, 180, 240, 0.6);
+  --text-color: #5c3a73;
+  --toggle-color: #ffd1dc;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--text-color);
+  transition: background-color 0.4s ease;
+}
+.homepage.dark {
+  background-color: #1e1e2e;
+  color: #e0e0e0;
+}
+
+.homepage.dark .header {
+  background: linear-gradient(135deg, #2a2a40, #3b3b52);
+  border-bottom: 2px solid #444;
+}
+
+.homepage.dark .footer {
+  background: linear-gradient(135deg, #2a2a40, #3b3b52);
+  color: #ccc;
+  border-top: 2px solid #444;
+}
+
+.homepage.dark .rescue-banner {
+  background: #2e2e3f;
+  color: #f0d0f0;
+}
+
+.homepage.dark .vet-info {
+  background: #35354a;
+  color: #e8e8e8;
+}
+
+.homepage.dark .search-bar {
+  background: #2a2a38;
+  color: #fff;
+  border: 2px solid #555;
+}
+
+.homepage.dark .search-btn {
+  background: linear-gradient(135deg, #555, #777);
+  color: #fff;
+}
+
+.pastel-toggle {
+  position: relative;
+  width: 60px;
+  height: 30px;
+}
+
+.pastel-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  background-color: #f6c3d0;
+  border-radius: 34px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transition: 0.4s;
+}
+
+.slider::before {
+  position: absolute;
+  content: "☀️";
+  font-size: 14px;
+  height: 24px;
+  width: 24px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.4s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+input:checked + .slider {
+  background-color: #4b6cb7;
+}
+
+input:checked + .slider:before {
+  transform: translateX(30px);
+  content: "🌙";
+}
+
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 40px;
+  background: var(--color-primary-gradient);
+  border-bottom: 2px solid #e7e2ea;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+}
+
+.logo-img {
+  width: 110px;
+  height: auto;
+  margin-right: 10px;
+}
+
+.brand-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-name {
+  font-size: 32px;
+  font-weight: 600;
+  margin: 0;
+  color: #5e3573;
+  letter-spacing: 1px;
+}
+
+.brand-tagline {
+  font-size: 14px;
+  color: #7a4e91;
+  margin-top: 4px;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.nav-btn {
+  background: var(--color-button);
+  padding: 8px 14px;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  color: #4b2560;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(255, 192, 250, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.nav-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--color-hover-glow);
+}
+
+.pastel-toggle-container {
+  display: flex;
+  align-items: center;
+}
+
+.rescue-banner {
+  background: #ffe4f2;
+  padding: 12px 24px;
+  font-weight: bold;
+  font-size: 16px;
+  text-align: center;
+  color: #5c2a50;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.rescue-banner a {
+  color: #c9184a;
+  text-decoration: none;
+}
+
+.vet-info {
+  background: #e787b1;
+  margin: 24px auto;
+  padding: 20px 32px;
+  border-radius: 16px;
+  max-width: 800px;
+  box-shadow: 0 0 10px rgba(243, 197, 255, 0.2);
+}
+
+.vet-info h2 {
+  margin-top: 0;
+  color: #a04aad;
+}
+
+.vet-info ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.vet-info li {
+  margin: 10px 0;
+}
+
+.search-section {
+  display: flex;
+  justify-content: center;
+  margin: 32px 0;
+  gap: 12px;
+}
+
+.search-bar {
+  padding: 10px 20px;
+  border: 2px solid #f6b4e6;
+  border-radius: 30px;
+  width: 300px;
+  font-size: 16px;
+}
+
+.search-btn {
+  padding: 10px 20px;
+  background: var(--color-button);
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #4b2560;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.search-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--color-hover-glow);
+}
+
+.pet-list-container {
+  padding: 0 32px;
+  margin-bottom: 64px;
+}
+
+.footer {
+  background: var(--color-primary-gradient);
+  padding: 20px;
+  text-align: center;
+  font-weight: 500;
+  color: #4a2d57;
+  border-top: 2px solid #e3d2ee;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px 20px;
+  }
+
+  .logo-section {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+
+  .brand-name {
+    font-size: 24px;
+  }
+
+  .brand-tagline {
+    font-size: 12px;
+  }
+
+  .nav-buttons {
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-start;
+  }
+
+  .rescue-banner {
+    font-size: 14px;
+    padding: 10px 20px;
+  }
+
+  .footer {
+    font-size: 14px;
+    padding: 16px 20px;
+  }
+
+  .search-section {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .search-bar {
+    width: 90%;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
