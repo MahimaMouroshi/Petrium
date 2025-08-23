@@ -4,185 +4,167 @@ import "./AdminDashboard.css";
 
 function AdminDashboard() {
   const [pets, setPets] = useState([]);
-  const [formData, setFormData] = useState({
+  const [petForm, setPetForm] = useState({
     name: "",
-    genre: "",
-    age: "",
-    gender: "",
+    type: "",
     price: "",
+    gender: "",
     foodHabit: "",
     description: "",
-    image: "",
+    image: null,
   });
-
-  const [stats, setStats] = useState({ totalUsers: 0, dailyUsers: 0 });
-  const [uploading, setUploading] = useState(false);
-  const [imageUrl, setImageUrl] = useState("");
+  const [imagePreview, setImagePreview] = useState(null);
+  const [adoptionRequests, setAdoptionRequests] = useState([]);
+  const [sellRequests, setSellRequests] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     fetchPets();
-    fetchStats();
+    fetchAdoptionRequests();
+    fetchSellRequests();
   }, []);
 
+  
   const fetchPets = async () => {
     try {
       const res = await axios.get("http://localhost:5000/api/admin/pets");
-      setPets(res.data);
+      setPets(res.data || []);
     } catch (err) {
-      console.error("Failed to fetch pets", err);
+      console.error(err);
     }
   };
 
-  const fetchStats = async () => {
+  const fetchAdoptionRequests = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/admin/stats");
-      setStats(res.data);
+      const res = await axios.get("http://localhost:5000/api/admin/adoptions");
+      setAdoptionRequests(res.data || []);
     } catch (err) {
-      console.error("Failed to fetch stats", err);
+      console.error(err);
     }
   };
 
-  const handleInput = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleImageChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const formDataImg = new FormData();
-    formDataImg.append("image", file);
-
+  const fetchSellRequests = async () => {
     try {
-      setUploading(true);
-      const res = await axios.post("http://localhost:5000/api/upload", formDataImg);
-      const uploadedPath = res.data.filePath;
-
-      setImageUrl(uploadedPath);
-      setFormData((prev) => ({ ...prev, image: uploadedPath }));
+      const res = await axios.get("http://localhost:5000/api/admin/sell-requests");
+      setSellRequests(res.data || []);
     } catch (err) {
-      console.error("Image upload failed", err);
-    } finally {
-      setUploading(false);
+      console.error(err);
     }
   };
+
+
+  const handlePetFormChange = (e) => {
+    const { name, value, files } = e.target;
+    if (files && files[0]) {
+      setPetForm({ ...petForm, [name]: files[0] });
+      setImagePreview(URL.createObjectURL(files[0]));
+    } else {
+      setPetForm({ ...petForm, [name]: value });
+    }
+  };
+
 
   const handleAddPet = async (e) => {
     e.preventDefault();
-    const fields = [
-      "name", "genre", "age", "gender", "price", "foodHabit", "description", "image"
-    ];
-    for (let field of fields) {
-      if (!formData[field]) {
-        alert(`Please fill in ${field}`);
-        return;
-      }
+    setErrorMessage("");
+
+    if (!petForm.name || !petForm.type || !petForm.price) {
+      setErrorMessage("Name, Type, and Price are required.");
+      return;
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/api/admin/pets", formData);
-      setPets((prev) => [...prev, res.data]);
+      const formData = new FormData();
+      formData.append("name", petForm.name);
+      formData.append("type", petForm.type);
+      formData.append("price", petForm.price);
+      if (petForm.gender) formData.append("gender", petForm.gender);
+      if (petForm.foodHabit) formData.append("foodHabit", petForm.foodHabit);
+      if (petForm.description) formData.append("description", petForm.description);
+      if (petForm.image) formData.append("image", petForm.image); // key MUST match multer
 
-      // Reset form
-      setFormData({
-        name: "",
-        genre: "",
-        age: "",
-        gender: "",
-        price: "",
-        foodHabit: "",
-        description: "",
-        image: "",
+      const res = await axios.post("http://localhost:5000/api/admin/pets", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
-      setImageUrl("");
+
+      alert(res.data.message || "Pet added successfully!");
+      setPetForm({ name: "", type: "", price: "", gender: "", foodHabit: "", description: "", image: null });
+      setImagePreview(null);
+      fetchPets();
     } catch (err) {
-      console.error("Failed to add pet", err);
-      alert("Pet could not be added.");
+      console.error(err.response?.data || err);
+      setErrorMessage(err.response?.data?.message || "Failed to add pet.");
     }
   };
 
+
   const handleDeletePet = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this pet?")) return;
     try {
       await axios.delete(`http://localhost:5000/api/admin/pets/${id}`);
-      setPets((prev) => prev.filter((p) => p._id !== id));
+      fetchPets();
     } catch (err) {
-      console.error("Failed to delete pet", err);
+      console.error(err);
+      alert("Failed to delete pet.");
     }
   };
 
   return (
     <div className="admin-dashboard">
-      <h1>🐾 Admin Dashboard</h1>
+      <h1>🐾 Petrium Admin Dashboard</h1>
 
-      <div className="stats">
-        <h3>📊 User Statistics</h3>
-        <p>Total Registered Users: {stats.totalUsers}</p>
-        <p>Today's Registrations: {stats.dailyUsers}</p>
-      </div>
-
-      <div className="add-pet-form">
-        <h3>➕ Add New Pet</h3>
-        <form onSubmit={handleAddPet}>
-          <input name="name" placeholder="Name" value={formData.name} onChange={handleInput} required />
-          <input name="genre" placeholder="Genre (e.g., Dog, Cat)" value={formData.genre} onChange={handleInput} required />
-          <input name="age" type="number" placeholder="Age" value={formData.age} onChange={handleInput} required />
-          <input name="gender" placeholder="Gender" value={formData.gender} onChange={handleInput} required />
-          <input name="price" type="number" placeholder="Price" value={formData.price} onChange={handleInput} required />
-          <input name="foodHabit" placeholder="Food Habit" value={formData.foodHabit} onChange={handleInput} required />
-          <textarea name="description" placeholder="Description" value={formData.description} onChange={handleInput} required />
-
-          <input type="file" accept="image/*" onChange={handleImageChange} />
-          {uploading && <p>Uploading...</p>}
-          {imageUrl && (
-            <img
-              src={`http://localhost:5000${imageUrl}`}
-              alt="Preview"
-              width="100"
-              height="100"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = "https://via.placeholder.com/100x100?text=No+Image";
-              }}
-            />
-          )}
-
-          <button type="submit">Add Pet</button>
+      <section className="admin-section">
+        <h2>Add New Pet</h2>
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
+        <form className="pet-form" onSubmit={handleAddPet}>
+          <input type="text" name="name" value={petForm.name} onChange={handlePetFormChange} placeholder="Pet Name *" required />
+          <input type="text" name="type" value={petForm.type} onChange={handlePetFormChange} placeholder="Pet Type *" required />
+          <input type="number" name="price" value={petForm.price} onChange={handlePetFormChange} placeholder="Price *" required />
+          <input type="text" name="gender" value={petForm.gender} onChange={handlePetFormChange} placeholder="Gender" />
+          <input type="text" name="foodHabit" value={petForm.foodHabit} onChange={handlePetFormChange} placeholder="Food Habit" />
+          <textarea name="description" value={petForm.description} onChange={handlePetFormChange} placeholder="Description"></textarea>
+          <input type="file" name="image" accept=".jpg,.jpeg,.png" onChange={handlePetFormChange} />
+          {imagePreview && <img src={imagePreview} alt="Preview" className="image-preview" />}
+          <button type="submit" className="btn-primary">Add Pet</button>
         </form>
-      </div>
+      </section>
 
-      <div className="pet-list">
-        <h3>🐶 All Pets</h3>
-        {pets.length === 0 ? (
-          <p>No pets added yet.</p>
-        ) : (
-          <div className="pet-list-container">
-            {pets.map((pet) => (
-              <div className="pet-item" key={pet._id}>
-                <img
-                  src={`http://localhost:5000${pet.image}`}
-                  alt={pet.name}
-                  width="100"
-                  height="100"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "https://via.placeholder.com/100x100?text=No+Image";
-                  }}
-                />
-                <div>
-                  <strong>{pet.name}</strong> ({pet.genre})<br />
-                  Age: {pet.age}, Gender: {pet.gender}, ৳{pet.price}<br />
-                  Food: {pet.foodHabit}<br />
-                  <small>{pet.description}</small>
-                </div>
-                <button onClick={() => handleDeletePet(pet._id)}>❌ Delete</button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      <section className="admin-section">
+        <h2>Stored Pets</h2>
+        <div className="pet-list">
+          {pets.length > 0 ? pets.map(pet => (
+            <div className="pet-card-admin" key={pet._id}>
+              {pet.image && <img src={`http://localhost:5000${pet.image}`} alt={pet.name} />}
+              <h3>{pet.name}</h3>
+              <p>Type: {pet.type}</p>
+              <p>Price: ৳{pet.price}</p>
+              <button className="btn-danger" onClick={() => handleDeletePet(pet._id)}>Delete</button>
+            </div>
+          )) : <p>No pets found.</p>}
+        </div>
+      </section>
+
+      <section className="admin-section">
+        <h2>Buyer (Adoption) Requests</h2>
+        <ul className="request-list">
+          {adoptionRequests.length > 0 ? adoptionRequests.map(req => (
+            <li key={req._id}><strong>{req.buyerName}</strong> wants to adopt <em>{req.petName}</em></li>
+          )) : <p>No adoption requests found.</p>}
+        </ul>
+      </section>
+
+      <section className="admin-section">
+        <h2>Seller Requests</h2>
+        <ul className="request-list">
+          {sellRequests.length > 0 ? sellRequests.map(req => (
+            <li key={req._id}><strong>{req.sellerName}</strong> wants to sell <em>{req.petName}</em></li>
+          )) : <p>No seller requests found.</p>}
+        </ul>
+      </section>
     </div>
   );
+
 }
 
 export default AdminDashboard;
+
